@@ -16,6 +16,21 @@ export const musicPlayerInit = () => {
 
     let trackIndex = 0;
 
+    const updateTime = () => {
+        const currentTime = audioPlayer.currentTime;
+        const duration = audioPlayer.duration;
+        const progress = (currentTime / duration) * 100;
+        
+        audioProgressTiming.style.width = progress +'%'; 
+
+        let minutesPassed = Math.floor(currentTime / 60);
+        let secondsPassed = Math.floor(currentTime % 60);
+        let minutesTotal = Math.floor(duration / 60) || 0;
+        let secondsTotal = Math.floor(duration % 60) || 0;
+
+        audioTimePassed.textContent = `${addZero(minutesPassed)}:${addZero(secondsPassed)}`; 
+        audioTimeTotal.textContent = `${addZero(minutesTotal)}:${addZero(secondsTotal)}`;
+    }
 
     const loadTrack = () => {
         const isPaused = audioPlayer.paused;
@@ -29,6 +44,10 @@ export const musicPlayerInit = () => {
             audioPlayer.pause();
         else
             audioPlayer.play();
+
+        audioPlayer.addEventListener('canplay', () => {
+            updateTime();
+        });
     }
 
 
@@ -78,21 +97,7 @@ export const musicPlayerInit = () => {
         loadTrack();
     });
 
-    audioPlayer.addEventListener('timeupdate', () => {
-        const currentTime = audioPlayer.currentTime;
-        const duration = audioPlayer.duration;
-        const progress = (currentTime / duration) * 100;
-        
-        audioProgressTiming.style.width = progress +'%'; 
-
-        let minutesPassed = Math.floor(currentTime / 60);
-        let secondsPassed = Math.floor(currentTime % 60);
-        let minutesTotal = Math.floor(duration / 60) || 0;
-        let secondsTotal = Math.floor(duration % 60) || 0;
-
-        audioTimePassed.textContent = `${addZero(minutesPassed)}:${addZero(secondsPassed)}`; 
-        audioTimeTotal.textContent = `${addZero(minutesTotal)}:${addZero(secondsTotal)}`;
-    });
+    audioPlayer.addEventListener('timeupdate', updateTime);
 
     audioProgress.addEventListener('click', event => {
         const x = event.offsetX;
@@ -100,4 +105,13 @@ export const musicPlayerInit = () => {
         const progress = x / totalWidth * audioPlayer.duration;
         audioPlayer.currentTime = progress;
     });
+
+    musicPlayerInit.pause = () => {
+        if (!audioPlayer.paused) {
+            audioPlayer.pause();
+            audio.classList.remove('play');
+            audioButtonPlay.classList.remove('fa-pause');
+            audioButtonPlay.classList.add('fa-play');
+        }   
+    };
 };

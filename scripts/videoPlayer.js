@@ -91,4 +91,10 @@ export const videoPlayerInit = () => {
     videoButtonExpand.addEventListener('click', () => {
         openFullscreen(videoPlayer);
     });
-};
+
+    videoPlayerInit.pause = () => {
+        if (!videoPlayer.paused) {
+            stopPlay();
+        }
+    }
+}
